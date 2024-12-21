@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Aile Ağacı</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .search-box { margin: 20px 0; }
+        .person-card { 
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .nav-links { margin-bottom: 20px; }
+        .nav-links a {
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 3px;
+        }
+        .button-group {
+            margin-top: 10px;
+        }
+        
+        .edit-button {
+            display: inline-block;
+            padding: 5px 15px;
+            background-color: #28a745;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            margin-right: 10px;
+        }
+        
+        .edit-button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+    <h1>Aile Ağacı</h1>
+    
+    <div class="nav-links">
+        <a href="/add">Yeni Kişi Ekle</a>
+    </div>
+
+    <div class="search-box">
+        <form action="/search" method="GET">
+            <input type="text" name="q" placeholder="İsim veya soyisim ara..." value="{{.Query}}">
+            <button type="submit">Ara</button>
+        </form>
+    </div>
+
+    {{if .People}}
+        {{range .People}}
+        <div class="person-card">
+            {{if .PhotoPath}}
+            <img src="/{{.PhotoPath}}" alt="{{.FirstName}} {{.LastName}}" style="max-width: 200px; border-radius: 5px;">
+            {{end}}
+            <h3>{{.FirstName}} {{.LastName}}</h3>
+            <p>TC Kimlik No: {{.IdentityNum}}</p>
+            <p>Telefon: {{.Phone}}</p>
+            <p>Doğum Tarihi: {{.BirthDate}}</p>
+            <p>Cinsiyet: {{.Gender}}</p>
+            <p>Hakkında: {{.About}}</p>
+            
+            <div class="button-group">
+                <a href="/edit/{{.ID}}" class="edit-button">Düzenle</a>
+            </div>
+        </div>
+        {{end}}
+    {{end}}
+</body>
+</html> 

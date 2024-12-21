@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kişi Düzenle - Aile Ağacı</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .form-group { margin: 10px 0; }
+        label { display: block; margin-bottom: 5px; }
+        input, select, textarea { padding: 5px; width: 300px; }
+        textarea { height: 100px; }
+        button { 
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .nav-links { margin-bottom: 20px; }
+        .nav-links a {
+            text-decoration: none;
+            padding: 5px 10px;
+            background-color: #007bff;
+            color: white;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kişi Düzenle</h1>
+    
+    <div class="nav-links">
+        <a href="/">Ana Sayfa</a>
+    </div>
+
+    <form action="/edit/{{.Person.ID}}" method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Ad:</label>
+            <input type="text" name="firstName" value="{{.Person.FirstName}}" required>
+        </div>
+        
+        <div class="form-group">
+            <label>Soyad:</label>
+            <input type="text" name="lastName" value="{{.Person.LastName}}" required>
+        </div>
+
+        <div class="form-group">
+            <label>TC Kimlik No:</label>
+            <input type="text" name="identityNum" value="{{.Person.IdentityNum}}" maxlength="11" pattern="\d{11}">
+        </div>
+
+        <div class="form-group">
+            <label>Telefon:</label>
+            <input type="tel" name="phone" value="{{.Person.Phone}}">
+        </div>
+        
+        <div class="form-group">
+            <label>Doğum Tarihi:</label>
+            <input type="date" name="birthDate" value="{{.Person.BirthDate}}">
+        </div>
+        
+        <div class="form-group">
+            <label>Cinsiyet:</label>
+            <select name="gender">
+                <option value="E" {{if eq .Person.Gender "E"}}selected{{end}}>Erkek</option>
+                <option value="K" {{if eq .Person.Gender "K"}}selected{{end}}>Kadın</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label>Kişi Hakkında:</label>
+            <textarea name="about">{{.Person.About}}</textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Fotoğraf:</label>
+            {{if .Person.PhotoPath}}
+            <img src="/{{.Person.PhotoPath}}" alt="Mevcut fotoğraf" style="max-width: 200px; margin: 10px 0;">
+            {{end}}
+            <input type="file" name="photo" accept="image/*">
+        </div>
+        
+        <button type="submit">Güncelle</button>
+    </form>
+</body>
+</html> 
