@@ -66,3 +66,8 @@ func UpdatePerson(db *sql.DB, person Person) error {
 
 	return err
 }
+
+func DeletePerson(db *sql.DB, id string) error {
+	_, err := db.Exec("DELETE FROM people WHERE id = ?", id)
+	return err
+}

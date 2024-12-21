@@ -22,6 +22,8 @@
         }
         .button-group {
             margin-top: 10px;
+            display: flex;
+            gap: 10px;
         }
         
         .edit-button {
@@ -31,11 +33,25 @@
             color: white;
             text-decoration: none;
             border-radius: 3px;
-            margin-right: 10px;
         }
         
         .edit-button:hover {
             background-color: #218838;
+        }
+        
+        .delete-button {
+            display: inline-block;
+            padding: 5px 15px;
+            background-color: #dc3545;
+            color: white;
+            text-decoration: none;
+            border-radius: 3px;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .delete-button:hover {
+            background-color: #c82333;
         }
     </style>
 </head>
@@ -66,8 +82,9 @@
             <p>Cinsiyet: {{.Gender}}</p>
             <p>Hakkında: {{.About}}</p>
             
-            <div class="button-group">
-                <a href="/edit/{{.ID}}" class="edit-button">Düzenle</a>
+            <div>
+                <a href="/edit/{{.ID}}" style="background: green; color: white; margin-right: 10px; padding: 5px 15px; border: none; border-radius: 3px; text-decoration: none;">Düzenle</a>
+                <a href="/delete/{{.ID}}" style="background: red; color: white; padding: 5px 15px; border: none; border-radius: 3px; text-decoration: none;" onclick="return confirm('Bu kişiyi silmek istediğinizden emin misiniz?')">Sil</a>
             </div>
         </div>
         {{end}}

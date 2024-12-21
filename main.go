@@ -182,9 +182,18 @@ func main() {
 	// Kişi güncelleme işlemi
 	r.POST("/edit/:id", func(c *gin.Context) {
 		id := c.Param("id")
-		log.Printf("Güncelleme isteği alındı. ID: %s", id)
 
-		// Fotoğraf dosyasını al
+		// Mevcut kişiyi al
+		person, err := GetPersonByID(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Eski fotoğraf yolunu sakla
+		oldPhotoPath := person.PhotoPath
+
+		// Yeni fotoğraf dosyasını al
 		file, err := c.FormFile("photo")
 		var photoPath string
 
@@ -204,16 +213,18 @@ func main() {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
 			}
+
+			// Eski fotoğrafı sil
+			if oldPhotoPath != "" {
+				if err := os.Remove(oldPhotoPath); err != nil {
+					log.Printf("Eski fotoğraf silinemedi: %v", err)
+				}
+			}
+
+			person.PhotoPath = photoPath
 		}
 
-		// Mevcut kişiyi al
-		person, err := GetPersonByID(db, id)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		// Yeni bilgileri güncelle
+		// Diğer bilgileri güncelle
 		person.FirstName = c.PostForm("firstName")
 		person.LastName = c.PostForm("lastName")
 		person.IdentityNum = c.PostForm("identityNum")
@@ -222,13 +233,36 @@ func main() {
 		person.Gender = c.PostForm("gender")
 		person.About = c.PostForm("about")
 
-		// Eğer yeni fotoğraf yüklendiyse güncelle
-		if photoPath != "" {
-			person.PhotoPath = photoPath
-		}
-
 		// Veritabanında güncelle
 		err = UpdatePerson(db, *person)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		c.Redirect(http.StatusFound, "/")
+	})
+
+	// Kişi silme işlemi
+	r.GET("/delete/:id", func(c *gin.Context) {
+		id := c.Param("id")
+
+		// Önce kişiyi al
+		person, err := GetPersonByID(db, id)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+
+		// Fotoğraf varsa sil
+		if person.PhotoPath != "" {
+			if err := os.Remove(person.PhotoPath); err != nil {
+				log.Printf("Fotoğraf silinemedi: %v", err)
+			}
+		}
+
+		// Veritabanından sil
+		err = DeletePerson(db, id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
